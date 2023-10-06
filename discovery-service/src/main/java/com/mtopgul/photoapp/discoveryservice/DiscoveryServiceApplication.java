@@ -1,4 +1,4 @@
-package com.mtopgul.photoapp.discovery.discoveryservice;
+package com.mtopgul.photoapp.discoveryservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
