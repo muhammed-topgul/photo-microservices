@@ -1,10 +1,12 @@
 package com.mtopgul.photoapp.userservice.controller;
 
+import com.mtopgul.photoapp.userservice.dto.ResponseDto;
 import com.mtopgul.photoapp.userservice.dto.UserDto;
 import com.mtopgul.photoapp.userservice.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +32,6 @@ public class UserController {
 
     @PostMapping("/sign-up")
     public ResponseEntity<?> signUp(@Valid @RequestBody UserDto userDto) {
-        return ResponseEntity.ok(userService.create(userDto));
+        return ResponseEntity.ok(ResponseDto.newSuccess(userService.create(userDto), HttpStatus.CREATED));
     }
 }

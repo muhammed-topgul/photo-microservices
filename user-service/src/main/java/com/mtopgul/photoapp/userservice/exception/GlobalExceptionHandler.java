@@ -1,6 +1,6 @@
 package com.mtopgul.photoapp.userservice.exception;
 
-import com.mtopgul.photoapp.userservice.dto.ErrorResponseDto;
+import com.mtopgul.photoapp.userservice.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
@@ -35,18 +35,16 @@ public class GlobalExceptionHandler implements ErrorController {
     private final ErrorAttributeOptions errorAttributeOptions = ErrorAttributeOptions.of(EXCEPTION, MESSAGE, BINDING_ERRORS);
 
     @RequestMapping("/error")
-    public ResponseEntity<ErrorResponseDto> handleException(WebRequest webRequest) {
+    public ResponseEntity<ResponseDto.Error> handleException(WebRequest webRequest) {
         Map<String, Object> attributes = errorAttributes.getErrorAttributes(webRequest, errorAttributeOptions);
         String message = (String) attributes.get("message");
         String path = (String) attributes.get("path");
         int statusCode = (int) attributes.get("status");
         HttpStatus httpStatus = getHttpStatus(statusCode);
-        ErrorResponseDto responseDto = ErrorResponseDto.builder()
-                .apiPath(path)
-                .errorCode(httpStatus.value())
-                .errorMessage(message)
-                .errorTime((Date) attributes.get("timestamp"))
-                .build();
+
+        ResponseDto.Error responseDto = ResponseDto
+                .newError(path, httpStatus.value(), message, (Date) attributes.get("timestamp"));
+
         if (environment.matchesProfiles("dev")) {
             responseDto.setExceptionClass((String) attributes.get("exception"));
         }
@@ -58,7 +56,7 @@ public class GlobalExceptionHandler implements ErrorController {
                 errors.put(fieldError.getField(), fieldError.getDefaultMessage());
             }
             responseDto.setErrors(errors);
-            responseDto.setErrorMessage((String) attributes.get("error"));
+            responseDto.setStatusMessage((String) attributes.get("error"));
         }
         return ResponseEntity.status(httpStatus).body(responseDto);
     }
