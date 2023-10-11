@@ -35,8 +35,6 @@ public class UserDto implements Serializable {
     private String password;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @NotNull(message = "Encrypted Password is required")
-    @Size(min = 4, max = 20, message = "Password must be between 4 and 20 characters length")
     private String encryptedPassword;
 
     @Unique(entity = UserEntity.class, field = "email", message = "Email must be unique")
