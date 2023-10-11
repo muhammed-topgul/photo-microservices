@@ -7,7 +7,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * @author muhammed-topgul
@@ -21,11 +25,20 @@ public class WebSecurity {
         httpSecurity.csrf().disable();
         httpSecurity.headers().frameOptions().disable();
         httpSecurity.authorizeHttpRequests()
-                .requestMatchers(HttpMethod.POST, "/api/users/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/users/**")
+                .access(authApiGatewayRequests())
                 .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/error/**")).permitAll()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         return httpSecurity.build();
+    }
+
+    private WebExpressionAuthorizationManager authApiGatewayRequests() {
+        try {
+            return new WebExpressionAuthorizationManager("hasIpAddress('%s')".formatted(InetAddress.getLocalHost().getHostAddress()));
+        } catch (UnknownHostException e) {
+            throw new RuntimeException("Cannot find IP address.");
+        }
     }
 }
