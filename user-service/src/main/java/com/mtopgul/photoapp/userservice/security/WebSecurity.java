@@ -29,6 +29,8 @@ public class WebSecurity {
         httpSecurity.authorizeHttpRequests(requests ->
                 requests.requestMatchers(HttpMethod.POST, "/api/users/**")
                         .access(authApiGatewayRequests())
+                        .requestMatchers(HttpMethod.GET, "**/status/check")
+                        .permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/error/**")).permitAll()
         ).sessionManagement(sessionManagement-> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
