@@ -10,6 +10,43 @@ spring:
         locator:
           enabled: true
           lower-case-service-id: true
+      routes:
+        - id: user_status_check
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/api/users/status/check
+            - Method=GET
+            - Header=Authorization, Bearer (.*)
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+            - AuthorizationHeaderFilter
+        - id: user_sign_up
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/api/users/sign-up
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+        - id: user_sign_in
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/api/users/sign-in
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+        - id: user_get_update_delete
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/api/users/**
+            - Method=GET,PUT,DELETE
+            - Header=Authorization, Bearer (.*)
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+            - AuthorizationHeaderFilter
 
 eureka:
   client:
