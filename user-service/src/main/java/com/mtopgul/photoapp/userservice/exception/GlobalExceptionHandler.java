@@ -48,6 +48,9 @@ public class GlobalExceptionHandler implements ErrorController {
         if (environment.matchesProfiles("dev")) {
             responseDto.setExceptionClass((String) attributes.get("exception"));
         }
+        if (statusCode == HttpStatus.UNAUTHORIZED.value()) {
+            responseDto.setStatusMessage("Email or password is wrong!");
+        }
         if (attributes.containsKey("errors")) {
             @SuppressWarnings("unchecked")
             List<FieldError> fieldErrors = (List<FieldError>) attributes.get("errors");
