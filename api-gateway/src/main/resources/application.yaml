@@ -11,6 +11,7 @@ spring:
           enabled: true
           lower-case-service-id: true
       routes:
+        # User Status Check (Requires Authentication)
         - id: user_status_check
           uri: lb://user-service
           predicates:
@@ -21,22 +22,8 @@ spring:
             - RemoveRequestHeader=Cookie
             - RewritePath=/user-service/(?<segment>.*), /$\{segment}
             - AuthorizationHeaderFilter
-        - id: user_sign_up
-          uri: lb://user-service
-          predicates:
-            - Path=/user-service/api/users/sign-up
-            - Method=POST
-          filters:
-            - RemoveRequestHeader=Cookie
-            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
-        - id: user_sign_in
-          uri: lb://user-service
-          predicates:
-            - Path=/user-service/api/users/sign-in
-            - Method=POST
-          filters:
-            - RemoveRequestHeader=Cookie
-            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+
+        # User Get, Update and Delete (Requires Authentication)
         - id: user_get_update_delete
           uri: lb://user-service
           predicates:
@@ -47,6 +34,26 @@ spring:
             - RemoveRequestHeader=Cookie
             - RewritePath=/user-service/(?<segment>.*), /$\{segment}
             - AuthorizationHeaderFilter
+
+        # User Sign Up (No Authentication)
+        - id: user_sign_up
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/api/users/sign-up
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+
+        # User Sign In (No Authentication)
+        - id: user_sign_in
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/api/users/sign-in
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
 
 eureka:
   client:
