@@ -74,7 +74,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private SecretKey getSecretKey() {
         byte[] secretKeyBytes = Base64.getEncoder()
-                .encode(Objects.requireNonNull(environment.getProperty("token.secret"))
+                        .encode(Objects.requireNonNull(environment.getProperty("token.secret"))
                         .getBytes());
         return new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.HS512.getJcaName());
     }

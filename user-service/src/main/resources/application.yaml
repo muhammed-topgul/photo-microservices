@@ -4,33 +4,5 @@ server:
 spring:
   application:
     name: user-service
-  datasource:
-    driverClassName: org.h2.Driver
-    password: ''
-    url: jdbc:h2:mem:user_db
-    username: sa
-  h2:
-    console:
-      enabled: true
-      settings:
-        web-allow-others: true
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    open-in-view: false
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:8010/eureka
-  instance:
-    instance-id: ${spring.application.name}_${spring.application.instance_id:${random.value}}
-
-token:
-  expiration_time: 3600000
-  secret: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik11aGFtbWVkIFRvcGd1bCIsImlhdCI6MTUxNjIzOTAyMn0.fTH_sA9Jeu4MztLPeVvaZtewN9GJIinQcK71NTJnlkI
+  config:
+    import: optional:configserver:http://localhost:8888
