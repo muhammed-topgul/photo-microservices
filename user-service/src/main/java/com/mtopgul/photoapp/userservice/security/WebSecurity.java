@@ -43,7 +43,8 @@ public class WebSecurity {
                                 .access(authApiGatewayRequests())
                                 .requestMatchers(HttpMethod.GET, "**/status/check").permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
-                                .requestMatchers(new AntPathRequestMatcher("/error/**")).permitAll())
+                                .requestMatchers(new AntPathRequestMatcher("/error/**")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/actuator/**")).permitAll())
                 .addFilter(getAuthenticationFilter(authenticationManager))
                 .authenticationManager(authenticationManager)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

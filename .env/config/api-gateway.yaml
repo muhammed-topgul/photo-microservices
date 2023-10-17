@@ -45,3 +45,13 @@ spring:
           filters:
             - RemoveRequestHeader=Cookie
             - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+
+        # User Sign In (No Authentication)
+        - id: user_actuator
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/actuator/**
+            - Method=GET
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}

@@ -10,7 +10,7 @@ spring:
     config:
       server:
         native:
-          search-locations: file:///${user.dir}/.run/config
+          search-locations: file:///${user.dir}/.env/config
   rabbitmq:
     host: localhost
     port: 15672
