@@ -33,3 +33,4 @@ eureka:
 
 token:
   expiration_time: 3600000
+  secret: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik11aGFtbWVkIFRvcGd1bCIsImlhdCI6MTUxNjIzOTAyMn0.fTH_sA9Jeu4MztLPeVvaZtewN9GJIinQcK71NTJnlkI

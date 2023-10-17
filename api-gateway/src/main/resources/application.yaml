@@ -6,10 +6,6 @@ spring:
     name: api-gateway
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
       routes:
         # User Status Check (Requires Authentication)
         - id: user_status_check
@@ -60,3 +56,6 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8010/eureka
     registry-fetch-interval-seconds: 5
+
+token:
+  secret: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik11aGFtbWVkIFRvcGd1bCIsImlhdCI6MTUxNjIzOTAyMn0.fTH_sA9Jeu4MztLPeVvaZtewN9GJIinQcK71NTJnlkI

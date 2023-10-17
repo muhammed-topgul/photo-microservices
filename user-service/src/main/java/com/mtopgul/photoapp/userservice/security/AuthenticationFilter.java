@@ -20,7 +20,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
-import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -32,8 +31,6 @@ import java.util.Objects;
  * @since 15/10/2023 19:05
  */
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private static final String chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private static final SecureRandom secureRandom = new SecureRandom();
     private final UserService userService;
     private final Environment environment;
 
@@ -76,15 +73,9 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     private SecretKey getSecretKey() {
-        byte[] secretKeyBytes = Base64.getEncoder().encode(generateSecretKeyText().getBytes());
+        byte[] secretKeyBytes = Base64.getEncoder()
+                .encode(Objects.requireNonNull(environment.getProperty("token.secret"))
+                        .getBytes());
         return new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.HS512.getJcaName());
-    }
-
-    private String generateSecretKeyText() {
-        int keyLength = 56;
-        StringBuilder key = new StringBuilder(keyLength);
-        for (int i = 0; i < keyLength; i++)
-            key.append(chars.charAt(secureRandom.nextInt(chars.length())));
-        return key.toString();
     }
 }
