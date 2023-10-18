@@ -3,6 +3,8 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8010/eureka
     registry-fetch-interval-seconds: 5
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
 
 token:
   secret: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik11aGFtbWVkIFRvcGd1bCIsImlhdCI6MTUxNjIzOTAyMn0.fTH_sA9Jeu4MztLPeVvaZtewN9GJIinQcK71NTJnlkI
