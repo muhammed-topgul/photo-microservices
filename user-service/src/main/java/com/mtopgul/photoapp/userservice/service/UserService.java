@@ -24,6 +24,7 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final BCryptPasswordEncoder encoder;
+    private final AlbumServiceClient albumServiceClient;
 
     public UserDto create(UserDto userDto) {
         userDto.setEncryptedPassword(encoder.encode(userDto.getPassword()));
@@ -34,6 +35,12 @@ public class UserService implements UserDetailsService {
         UserEntity userEntity = userRepository.findUserEntityByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(email));
         return userMapper.toDto(userEntity);
+    }
+
+    public UserDto findById(String id) {
+        UserEntity userEntity = userRepository.findUserEntityById(id)
+                .orElseThrow(() -> new UsernameNotFoundException(id));
+        return userMapper.toDto(userEntity, albumServiceClient.getAlbums(id));
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.mtopgul.photoapp.userservice.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mtopgul.photoapp.userservice.annotion.Unique;
 import com.mtopgul.photoapp.userservice.entity.UserEntity;
@@ -10,6 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author muhammed-topgul
@@ -17,6 +19,7 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class UserDto implements Serializable {
     @Size(min = 36, max = 36, message = "Missing or incorrect id")
     private String id;
@@ -42,4 +45,7 @@ public class UserDto implements Serializable {
     @Size(min = 4, max = 20, message = "Email must be between 4 and 20 characters length")
     @Email(message = "Email address must be valid")
     private String email;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private List<AlbumDto> albums;
 }

@@ -16,7 +16,7 @@ public class ResponseDto {
     @Getter
     @Setter
     @JsonInclude(value = JsonInclude.Include.NON_NULL)
-    private static class Response {
+    public static class Response {
         private int statusCode;
         private String statusMessage;
 
