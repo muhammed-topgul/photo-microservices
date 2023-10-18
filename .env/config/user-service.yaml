@@ -1,20 +1,16 @@
 spring:
   datasource:
-    driverClassName: org.h2.Driver
-    password: ''
-    url: jdbc:h2:mem:user_db
-    username: sa
-  h2:
-    console:
-      enabled: true
-      settings:
-        web-allow-others: true
+    hikari:
+      connection-timeout: 20000
+      maximum-pool-size: 5
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
-    open-in-view: false
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
