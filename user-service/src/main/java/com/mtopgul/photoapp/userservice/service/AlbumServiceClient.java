@@ -14,5 +14,5 @@ import java.util.List;
 @FeignClient(name = "album-service")
 public interface AlbumServiceClient {
     @GetMapping("/api/albums/{id}")
-    List<AlbumDto> getAlbums(@PathVariable String id);
+    List<AlbumDto> getAlbums(@PathVariable(name = "id") String id);
 }

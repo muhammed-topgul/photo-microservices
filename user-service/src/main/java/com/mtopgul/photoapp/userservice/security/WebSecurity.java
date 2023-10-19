@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -36,18 +35,22 @@ public class WebSecurity {
     @Bean
     protected SecurityFilterChain configure(HttpSecurity httpSecurity) throws Exception {
         AuthenticationManager authenticationManager = getAuthenticationManager(httpSecurity);
-        httpSecurity.csrf(AbstractHttpConfigurer::disable);
-        httpSecurity.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
-        httpSecurity.authorizeHttpRequests(requests ->
-                        requests.requestMatchers(HttpMethod.POST, "/api/users/**")
-                                .access(authApiGatewayRequests())
-                                .requestMatchers(HttpMethod.GET, "**/status/check").permitAll()
+        httpSecurity
+                .cors(cors -> {
+                })
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests((auth) ->
+                        auth.requestMatchers(HttpMethod.POST, "/api/users/**")
+                                .access(acceptOnlyRequestFromApiGateway())
+                                .requestMatchers(HttpMethod.GET, "/api/users/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/error").permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
-                                .requestMatchers(new AntPathRequestMatcher("/error/**")).permitAll()
-                                .requestMatchers(new AntPathRequestMatcher("/actuator/**")).permitAll())
+                                .anyRequest()
+                                .authenticated()
+                )
                 .addFilter(getAuthenticationFilter(authenticationManager))
                 .authenticationManager(authenticationManager)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return httpSecurity.build();
     }
 
@@ -65,7 +68,7 @@ public class WebSecurity {
         return authenticationManagerBuilder.build();
     }
 
-    private WebExpressionAuthorizationManager authApiGatewayRequests() {
+    private WebExpressionAuthorizationManager acceptOnlyRequestFromApiGateway() {
         try {
             return new WebExpressionAuthorizationManager("hasIpAddress('%s')".formatted(InetAddress.getLocalHost().getHostAddress()));
         } catch (UnknownHostException e) {

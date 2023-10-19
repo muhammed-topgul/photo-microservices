@@ -49,7 +49,6 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
             if (!isValidJwt(jwt)) {
                 return onError(exchange);
             }
-
             return chain.filter(exchange);
         };
     }

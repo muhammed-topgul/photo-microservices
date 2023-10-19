@@ -1,5 +1,6 @@
 package com.mtopgul.photoapp.userservice.config;
 
+import feign.Logger;
 import org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository;
 import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.context.annotation.Bean;
@@ -20,5 +21,10 @@ public class Config {
     @Bean
     public HttpExchangeRepository httpExchangeRepository() {
         return new InMemoryHttpExchangeRepository();
+    }
+
+    @Bean
+    public Logger.Level feignLogLevel() {
+        return Logger.Level.FULL;
     }
 }
