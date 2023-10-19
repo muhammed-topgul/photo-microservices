@@ -2,6 +2,7 @@ package com.mtopgul.photoapp.userservice.service;
 
 import com.mtopgul.photoapp.userservice.dto.AlbumDto;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,7 @@ public interface AlbumServiceClient {
     Logger log = Logger.getLogger("AlbumServiceClient");
 
     @GetMapping("/api/albums/{id}")
+    @Retry(name = "album-service")
     @CircuitBreaker(name = "album-service", fallbackMethod = "getAlbumsFallback")
     List<AlbumDto> getAlbums(@PathVariable(name = "id") String id);
 

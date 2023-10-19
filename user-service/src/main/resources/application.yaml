@@ -28,4 +28,13 @@ resilience4j:
         sliding-window-size: 2
         minimum-number-of-calls: 1
         event-consumer-buffer-size: 10
+    circuit-breaker-aspect-order: 1
+  retry:
+    retry-aspect-order: 2
+    instances:
+      album-service:
+        max-attempts: 3
+        wait-duration: 2s
+        enable-exponential-backoff: true
+        exponential-backoff-multipliers: 5
 
