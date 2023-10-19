@@ -71,7 +71,7 @@ spring:
             - AuthorizationHeaderFilter
 
         # Album Get (Requires Authentication)
-        - id: album_get_update_delete
+        - id: album_get
           uri: lb://album-service
           predicates:
             - Path=/album-service/api/albums/**
