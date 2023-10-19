@@ -1,10 +1,12 @@
 package com.mtopgul.photoapp.userservice.service;
 
+import com.mtopgul.photoapp.userservice.dto.AlbumDto;
 import com.mtopgul.photoapp.userservice.dto.UserDto;
 import com.mtopgul.photoapp.userservice.entity.UserEntity;
 import com.mtopgul.photoapp.userservice.mapper.UserMapper;
 import com.mtopgul.photoapp.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author muhammed-topgul
@@ -20,6 +23,7 @@ import java.util.ArrayList;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -40,7 +44,10 @@ public class UserService implements UserDetailsService {
     public UserDto findById(String id) {
         UserEntity userEntity = userRepository.findUserEntityById(id)
                 .orElseThrow(() -> new UsernameNotFoundException(id));
-        return userMapper.toDto(userEntity, albumServiceClient.getAlbums(id));
+        log.debug("Before calling Album Service");
+        List<AlbumDto> albums = albumServiceClient.getAlbums(id);
+        log.debug("After called Album Service");
+        return userMapper.toDto(userEntity, albums);
     }
 
     @Override

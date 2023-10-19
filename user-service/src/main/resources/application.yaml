@@ -8,6 +8,8 @@ spring:
     import: optional:configserver:http://localhost:8888
 
 logging:
+  pattern:
+    level: %5p [${spring.application.name}, %X{traceId:-}, %X{spanId:-}]
   level:
     com:
       mtopgul:
@@ -15,6 +17,7 @@ logging:
           userservice:
             service:
               AlbumServiceClient: DEBUG
+              UserService: DEBUG
 
 resilience4j:
   circuitbreaker:
@@ -37,4 +40,9 @@ resilience4j:
         wait-duration: 2s
         enable-exponential-backoff: true
         exponential-backoff-multipliers: 5
+
+management:
+  tracing:
+    sampling:
+      probability: 1
 

@@ -21,3 +21,8 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
+
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - 9411:9411
