@@ -8,5 +8,7 @@ spring:
     import: optional:configserver:http://localhost:8888
 
 logging:
+  file:
+    name: ${user.dir}/.log/album-service.log
   pattern:
     level: '%5p [${spring.application.name}, %X{traceId:-}, %X{spanId:-}]'
