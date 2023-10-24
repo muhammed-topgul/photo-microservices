@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-slim as build
 MAINTAINER mtopgul.com
 
 # Add the application's jar to the container
-COPY target/discovery-service-0.0.1-SNAPSHOT.jar discovery-service-0.0.1-SNAPSHOT.jar
+COPY target/config-server-0.0.1-SNAPSHOT.jar config-server-0.0.1-SNAPSHOT.jar
 
 #execute the application
-ENTRYPOINT ["java","-jar","/discovery-service-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java","-jar","/config-server-0.0.1-SNAPSHOT.jar"]
