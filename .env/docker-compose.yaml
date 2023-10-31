@@ -1,21 +1,18 @@
-version: "3.8"
+version: "3"
 services:
   rabbitmq3:
     container_name: "rabbitmq"
     image: rabbitmq:3.12-management
-    restart: always
+#    restart: always
     environment:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
     ports:
-      # AMQP protocol port
       - '5672:5672'
-      # HTTP management UI
       - '15672:15672'
 
   postgres:
     image: postgres:14-alpine
-    restart: always
     ports:
       - 5432:5432
     volumes:
@@ -24,57 +21,74 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
 
-  zipkin:
-    image: openzipkin/zipkin
-    restart: always
-    ports:
-      - 9411:9411
+#  zipkin:
+#    image: openzipkin/zipkin
+##    restart: always
+#    ports:
+#      - 9411:9411
 
-  elasticsearch:
-    image: elasticsearch:7.16.2
-    container_name: elasticsearch
-    restart: always
-    volumes:
-      - elastic_data:/usr/share/elasticsearch/data/
-    environment:
-      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
-      discovery.type: single-node
+  config-server:
+    image: mtopgul/config-server:0.0.1-SNAPSHOT
+    container_name: config-server
     ports:
-      - '9200:9200'
-      - '9300:9300'
-    networks:
-      - elk
-
-  logstash:
-    image: logstash:7.16.2
-    container_name: logstash
-    restart: always
-    volumes:
-      - ./logstash/:/logstash_dir
-    command: logstash -f /logstash_dir/logstash.conf
+      - 8888:8888
     depends_on:
-      - elasticsearch
-    ports:
-      - '9600:9600'
-    environment:
-      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
-    networks:
-      - elk
+      - rabbitmq3
 
-  kibana:
-    image: kibana:7.16.2
-    container_name: kibana
-    restart: always
-    ports:
-      - '5601:5601'
+  discovery-service:
+    image: mtopgul/discovery-service:0.0.1-SNAPSHOT
+    container_name: discovery-service
     environment:
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - SPRING_PROFILES_ACTIVE=prod
+    ports:
+      - 8010:8010
     depends_on:
-      - elasticsearch
-    networks:
-      - elk
-volumes:
-  elastic_data: {}
+      - config-server
 
-networks:
-  elk:
+  account-service:
+    image: mtopgul/account-service:0.0.1-SNAPSHOT
+    container_name: account-service
+    environment:
+      - SERVER_PORT=9010
+      - SPRING_PROFILES_ACTIVE=prod
+    ports:
+      - 9010:9010
+    depends_on:
+      - config-server
+      - discovery-service
+
+  album-service:
+    image: mtopgul/album-service:0.0.1-SNAPSHOT
+    container_name: album-service
+    environment:
+      - SERVER_PORT=9011
+      - SPRING_PROFILES_ACTIVE=prod
+    ports:
+      - 9011:9011
+    depends_on:
+      - config-server
+      - discovery-service
+
+  user-service:
+    image: mtopgul/user-service:0.0.1-SNAPSHOT
+    container_name: user-service
+    environment:
+      - SERVER_PORT=9012
+      - SPRING_PROFILES_ACTIVE=prod
+    ports:
+      - 9012:9012
+    depends_on:
+      - config-server
+      - discovery-service
+      - postgres
+
+  api-gateway:
+    image: mtopgul/api-gateway:0.0.1-SNAPSHOT
+    container_name: api-gateway
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    ports:
+      - 8082:8082
+    depends_on:
+      - config-server
+      - discovery-service
