@@ -30,6 +30,7 @@ services:
   config-server:
     image: mtopgul/config-server:0.0.1-SNAPSHOT
     container_name: config-server
+    restart: on-failure
     ports:
       - 8888:8888
     depends_on:
@@ -38,6 +39,7 @@ services:
   discovery-service:
     image: mtopgul/discovery-service:0.0.1-SNAPSHOT
     container_name: discovery-service
+    restart: on-failure
     environment:
       - SPRING_PROFILES_ACTIVE=prod
     ports:
@@ -48,6 +50,7 @@ services:
   account-service:
     image: mtopgul/account-service:0.0.1-SNAPSHOT
     container_name: account-service
+    restart: on-failure
     environment:
       - SERVER_PORT=9010
       - SPRING_PROFILES_ACTIVE=prod
@@ -60,6 +63,7 @@ services:
   album-service:
     image: mtopgul/album-service:0.0.1-SNAPSHOT
     container_name: album-service
+    restart: on-failure
     environment:
       - SERVER_PORT=9011
       - SPRING_PROFILES_ACTIVE=prod
@@ -72,6 +76,7 @@ services:
   user-service:
     image: mtopgul/user-service:0.0.1-SNAPSHOT
     container_name: user-service
+    restart: on-failure
     environment:
       - SERVER_PORT=9012
       - SPRING_PROFILES_ACTIVE=prod
@@ -85,6 +90,7 @@ services:
   api-gateway:
     image: mtopgul/api-gateway:0.0.1-SNAPSHOT
     container_name: api-gateway
+    restart: on-failure
     environment:
       - SPRING_PROFILES_ACTIVE=prod
     ports:
