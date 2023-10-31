@@ -17,6 +17,8 @@
 
     <properties>
         <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <spring-cloud.version>2022.0.3</spring-cloud.version>
         <org.mapstruct.version>1.4.1.Final</org.mapstruct.version>
         <org.lombok.version>1.18.18</org.lombok.version>
@@ -164,6 +166,8 @@
                             -Amapstruct.defaultComponentModel=spring
                         </compilerArg>
                     </compilerArgs>
+                    <source>17</source>
+                    <target>17</target>
                 </configuration>
             </plugin>
             <plugin>

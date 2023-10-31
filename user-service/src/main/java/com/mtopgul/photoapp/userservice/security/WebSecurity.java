@@ -40,15 +40,15 @@ public class WebSecurity {
                 })
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((auth) ->
-                        auth.requestMatchers(HttpMethod.POST, "/api/users/**")
+                        auth.requestMatchers("/api/users/**")
                                 .access(acceptOnlyRequestFromApiGateway())
-                                .requestMatchers(HttpMethod.GET, "/api/users/**").permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/error/**")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/actuator/**")).permitAll()
                                 .anyRequest()
                                 .authenticated()
                 )
+                .addFilter(new AuthorizationFilter(authenticationManager, environment))
                 .addFilter(getAuthenticationFilter(authenticationManager))
                 .authenticationManager(authenticationManager)
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

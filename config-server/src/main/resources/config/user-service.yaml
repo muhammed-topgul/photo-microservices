@@ -18,6 +18,12 @@ spring:
 token:
   expiration_time: 3600000
 
+auth:
+  token:
+    header:
+      name: Authorization
+      prefix: Bearer
+
 management:
   endpoints:
     health:
