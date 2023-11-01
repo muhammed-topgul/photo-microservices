@@ -43,8 +43,7 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
             chain.doFilter(request, response);
             return;
         }
-        UsernamePasswordAuthenticationToken authenticationToken = getAuthentication(authHeader, prefix);
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(getAuthentication(authHeader, prefix));
         chain.doFilter(request, response);
     }
 

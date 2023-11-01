@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,6 +39,8 @@ public class UserController {
         return ResponseEntity.ok(ResponseDto.newSuccess(userService.create(userDto), HttpStatus.CREATED));
     }
 
+    @PreAuthorize("principal == #id")
+    @PostAuthorize("principal == returnObject.body.body.id")
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto.Response> findById(@PathVariable String id) {
         return ResponseEntity.ok(ResponseDto.newSuccess(userService.findById(id), HttpStatus.ACCEPTED));
