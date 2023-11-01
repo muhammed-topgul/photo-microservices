@@ -58,6 +58,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         UserDto userDto = userService.findByEmail(((User) authResult.getPrincipal()).getUsername());
         Instant now = Instant.now();
         String token = Jwts.builder()
+                .claim("scope", authResult.getAuthorities())
                 .setSubject(userDto.getId())
                 .setExpiration(Date.from(now.plusMillis(getExpireDate())))
                 .setIssuedAt(Date.from(now))

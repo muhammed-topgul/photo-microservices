@@ -45,4 +45,22 @@ public class UserController {
     public ResponseEntity<ResponseDto.Response> findById(@PathVariable String id) {
         return ResponseEntity.ok(ResponseDto.newSuccess(userService.findById(id), HttpStatus.ACCEPTED));
     }
+
+    @PreAuthorize("hasRole('ADMIN') or hasAuthority('PROFILE_DELETE')")
+    @GetMapping("/delete-user/{id}")
+    public ResponseEntity<ResponseDto.Response> deleteUser(@PathVariable String id) {
+        return ResponseEntity.ok(ResponseDto.newSuccess("User deleted: %s".formatted(id), HttpStatus.OK));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/only-for-admin")
+    public ResponseEntity<ResponseDto.Response> onlyForAdmin() {
+        return ResponseEntity.ok(ResponseDto.newSuccess("This message only available for ADMINs", HttpStatus.OK));
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or principal == #id")
+    @GetMapping("/for-admin-or-authenticated/{id}")
+    public ResponseEntity<ResponseDto.Response> forAdminOrAuthenticated(@PathVariable String id) {
+        return ResponseEntity.ok(ResponseDto.newSuccess("This message available for ADMINs and all authenticated USERs.", HttpStatus.OK));
+    }
 }

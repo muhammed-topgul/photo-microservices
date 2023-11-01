@@ -13,42 +13,40 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Set;
 
 /**
  * @author muhammed-topgul
- * @since 09/10/2023 10:01
+ * @since 01/11/2023 10:21
  */
 @Entity
-@Table(name = "t_user")
+@Table(name = "t_role")
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
-public class UserEntity {
+@NoArgsConstructor
+public class RoleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(nullable = false)
-    private String firstName;
+    @Column(nullable = false, length = 20)
+    private String name;
 
-    @Column(nullable = false)
-    private String lastName;
-
-    @Column(nullable = false)
-    private String password;
-
-    @Column(nullable = false)
-    private String encryptedPassword;
-
-    @Column(unique = true, nullable = false)
-    private String email;
+    @ManyToMany(mappedBy = "roles")
+    private Set<UserEntity> users;
 
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    @JoinTable(name = "t_user_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<RoleEntity> roles;
+    @JoinTable(name = "t_role_authority",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "authority_id"))
+    private Set<AuthorityEntity> authorities;
+
+    public RoleEntity(String name, Set<AuthorityEntity> authorities) {
+        this.name = name;
+        this.authorities = authorities;
+    }
 }

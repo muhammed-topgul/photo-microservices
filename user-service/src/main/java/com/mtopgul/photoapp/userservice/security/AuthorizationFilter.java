@@ -1,25 +1,17 @@
 package com.mtopgul.photoapp.userservice.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwt;
-import io.jsonwebtoken.JwtParser;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.mtopgul.photoapp.tokenlib.TokenParser;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.core.env.Environment;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Objects;
 
 /**
@@ -53,18 +45,12 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
         if (Objects.isNull(tokenSecret)) {
             return null;
         }
-        byte[] secretKeyBytes = Base64.getEncoder().encode(tokenSecret.getBytes());
-        SecretKey secretKey = new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.HS512.getJcaName());
-        String userId = ((Claims) Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parse(token)
-                .getBody())
-                .getSubject();
+        TokenParser tokenParser = TokenParser.build(token, tokenSecret);
+        String userId = tokenParser.getSubject();
         if (Objects.isNull(userId) || userId.isEmpty()) {
             return null;
         }
-        return new UsernamePasswordAuthenticationToken(userId, null, new ArrayList<>());
+        return new UsernamePasswordAuthenticationToken(userId, null, tokenParser.getAuthorities());
     }
 
     private String getHeader(String name) {

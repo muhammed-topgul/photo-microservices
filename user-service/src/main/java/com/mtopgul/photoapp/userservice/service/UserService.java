@@ -7,6 +7,8 @@ import com.mtopgul.photoapp.userservice.mapper.UserMapper;
 import com.mtopgul.photoapp.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -52,7 +55,13 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        UserDto userDto = findByEmail(email);
-        return new User(userDto.getEmail(), userDto.getEncryptedPassword(), new ArrayList<>());
+        UserEntity userEntity = userRepository.findUserEntityByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(email));
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        userEntity.getRoles().forEach(role -> {
+            authorities.add(new SimpleGrantedAuthority(role.getName()));
+            role.getAuthorities().forEach(authority -> authorities.add(new SimpleGrantedAuthority(authority.getName())));
+        });
+        return new User(userEntity.getEmail(), userEntity.getEncryptedPassword(), authorities);
     }
 }
