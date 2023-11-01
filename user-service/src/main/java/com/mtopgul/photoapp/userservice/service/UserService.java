@@ -44,11 +44,11 @@ public class UserService implements UserDetailsService {
         return userMapper.toDto(userEntity);
     }
 
-    public UserDto findById(String id) {
+    public UserDto findById(String id, String authorization) {
         UserEntity userEntity = userRepository.findUserEntityById(id)
                 .orElseThrow(() -> new UsernameNotFoundException(id));
         log.debug("Before calling Album Service");
-        List<AlbumDto> albums = albumServiceClient.getAlbums(id);
+        List<AlbumDto> albums = albumServiceClient.getAlbums(id, authorization);
         log.debug("After called Album Service");
         return userMapper.toDto(userEntity, albums);
     }

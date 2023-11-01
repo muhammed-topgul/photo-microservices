@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,8 +43,9 @@ public class UserController {
     @PreAuthorize("principal == #id")
     @PostAuthorize("principal == returnObject.body.body.id")
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseDto.Response> findById(@PathVariable String id) {
-        return ResponseEntity.ok(ResponseDto.newSuccess(userService.findById(id), HttpStatus.ACCEPTED));
+    public ResponseEntity<ResponseDto.Response> findById(@PathVariable String id,
+                                                         @RequestHeader("Authorization") String authorization) {
+        return ResponseEntity.ok(ResponseDto.newSuccess(userService.findById(id, authorization), HttpStatus.ACCEPTED));
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasAuthority('PROFILE_DELETE')")

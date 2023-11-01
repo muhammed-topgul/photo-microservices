@@ -1,6 +1,5 @@
-package com.mtopgul.photoapp.userservice.security;
+package com.mtopgul.photoapp.tokenlib;
 
-import com.mtopgul.photoapp.tokenlib.TokenParser;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,7 +1,6 @@
-package com.mtopgul.photoapp.userservice.security;
+package com.mtopgul.photoapp.albumservice.security;
 
 import com.mtopgul.photoapp.tokenlib.AuthorizationFilter;
-import com.mtopgul.photoapp.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +12,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -30,8 +28,6 @@ import java.net.UnknownHostException;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class WebSecurity {
-    private final UserService userService;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final Environment environment;
 
     @Bean
@@ -42,7 +38,7 @@ public class WebSecurity {
                 })
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((auth) ->
-                        auth.requestMatchers("/api/users/**")
+                        auth.requestMatchers("/api/albums/**")
                                 .access(acceptOnlyRequestFromApiGateway())
                                 .requestMatchers(new AntPathRequestMatcher("/error/**")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
@@ -50,23 +46,14 @@ public class WebSecurity {
                                 .anyRequest()
                                 .authenticated())
                 .addFilter(new AuthorizationFilter(authenticationManager, environment))
-                .addFilter(getAuthenticationFilter(authenticationManager))
                 .authenticationManager(authenticationManager)
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return httpSecurity.build();
     }
 
-    private AuthenticationFilter getAuthenticationFilter(AuthenticationManager authenticationManager) {
-        AuthenticationFilter filter = new AuthenticationFilter(authenticationManager, userService, environment);
-        filter.setFilterProcessesUrl("/api/users/sign-in");
-        return filter;
-    }
-
     private AuthenticationManager getAuthenticationManager(HttpSecurity httpSecurity) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder = httpSecurity
                 .getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.userDetailsService(userService)
-                .passwordEncoder(bCryptPasswordEncoder);
         return authenticationManagerBuilder.build();
     }
 

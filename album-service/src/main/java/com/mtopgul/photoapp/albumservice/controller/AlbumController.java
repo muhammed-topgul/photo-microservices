@@ -3,6 +3,7 @@ package com.mtopgul.photoapp.albumservice.controller;
 import com.mtopgul.photoapp.albumservice.dto.AlbumDto;
 import com.mtopgul.photoapp.albumservice.service.AlbumService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,7 @@ public class AlbumController {
         return "Album Service is up and running!";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{userId}")
     public List<AlbumDto> getAlbums(@PathVariable String userId) {
         return albumService.getAlbums(userId);
