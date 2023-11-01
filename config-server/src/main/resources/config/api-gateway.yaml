@@ -15,17 +15,29 @@ spring:
             - RewritePath=/user-service/(?<segment>.*), /$\{segment}
             - AuthorizationHeaderFilter
 
-        # User Get, Update and Delete (Requires Authentication)
-        - id: user_get_update_delete
+        # User Get and Update (Requires Authentication)
+        - id: user_get_update
           uri: lb://user-service
           predicates:
             - Path=/user-service/api/users/**
-            - Method=GET,PUT,DELETE
+            - Method=GET,PUT
             - Header=Authorization, Bearer (.*)
           filters:
             - RemoveRequestHeader=Cookie
             - RewritePath=/user-service/(?<segment>.*), /$\{segment}
-            - AuthorizationHeaderFilter
+            - AuthorizationHeaderFilter=ROLE_ADMIN
+
+        # User Delete (Requires Authentication)
+        - id: user_delete
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/api/users/**
+            - Method=DELETE
+            - Header=Authorization, Bearer (.*)
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+            - AuthorizationHeaderFilter=ROLE_ADMIN DELETE
 
         # User Sign Up (No Authentication)
         - id: user_sign_up

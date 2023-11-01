@@ -1,5 +1,11 @@
 set PROJECT_DIR=%~dp0\..
 
+:::::::::::::::::::::::::::::Token Library::::::::::::::::::::::::::::::
+call cd %PROJECT_DIR%\token-lib
+call mvn clean
+call mvn install
+call cd %PROJECT_DIR%
+
 :::::::::::::::::::::::::::::Account Service::::::::::::::::::::::::::::::
 call cd %PROJECT_DIR%\account-service
 call mvn clean

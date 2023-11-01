@@ -3,6 +3,8 @@ package com.mtopgul.photoapp.apigateway.filter;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.core.env.Environment;
@@ -16,8 +18,7 @@ import reactor.core.publisher.Mono;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.util.Base64;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author muhammed-topgul
@@ -25,7 +26,13 @@ import java.util.Objects;
  */
 @Component
 public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<AuthorizationHeaderFilter.Config> {
+    @Getter
     public static class Config {
+        private List<String> authorities;
+
+        public void setAuthorities(String authorities) {
+            this.authorities = List.of(authorities.split(" "));
+        }
     }
 
     private final Environment environment;
@@ -36,27 +43,48 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
     }
 
     @Override
+    public List<String> shortcutFieldOrder() {
+        return List.of("authorities");
+    }
+
+    @Override
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
             if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
-                return onError(exchange);
+                return onError(exchange, "Request header must has %s. key!".formatted(HttpHeaders.AUTHORIZATION));
             }
             String jwt = Objects
                     .requireNonNull(request.getHeaders().get(HttpHeaders.AUTHORIZATION))
                     .get(0)
                     .replace("Bearer", "");
-            if (!isValidJwt(jwt)) {
-                return onError(exchange);
+            boolean nonRequiredAuthority = getAuthorities(jwt)
+                    .stream()
+                    .noneMatch(authority -> config.getAuthorities().contains(authority));
+            if (nonRequiredAuthority) {
+                return onError(exchange, "You are not authorized for this operation!");
             }
             return chain.filter(exchange);
         };
     }
 
-    private Mono<Void> onError(ServerWebExchange exchange) {
+    private Mono<Void> onError(ServerWebExchange exchange, String message) {
         ServerHttpResponse response = exchange.getResponse();
-        response.setStatusCode(HttpStatus.UNAUTHORIZED);
-        return response.setComplete();
+        response.setStatusCode(HttpStatus.FORBIDDEN);
+        return response.writeWith(Mono.just(response.bufferFactory().wrap(message.getBytes())));
+    }
+
+    private List<String> getAuthorities(String jwt) {
+        List<String> authorities = new ArrayList<>();
+        List<Map<String, String>> scopes = ((Claims) Jwts.parserBuilder()
+                .setSigningKey(getSecretKey())
+                .build()
+                .parse(jwt)
+                .getBody())
+                .get("scope", List.class);
+
+        scopes.forEach(scopeMap -> authorities.add(scopeMap.get("authority")));
+        return authorities;
     }
 
     private boolean isValidJwt(String jwt) {
